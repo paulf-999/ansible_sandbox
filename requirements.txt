@@ -1,1 +1,2 @@
-yq
+ansible==8.7.0. # supports python3.9
+yq==3.4.3

@@ -24,7 +24,8 @@ all: deps install clean
 
 deps:
 	@echo "${INFO}\nCalled makefile target 'deps'. Download any required libraries.${COLOUR_OFF}\n"
-	@echo "${DEBUG}deps called"
+	@echo "${DEBUG}Installing Python deps with pipx.${COLOUR_OFF}\n"
+	@pip install -r requirements.txt
 
 install:
 	@echo "${INFO}\nCalled makefile target 'install'. Run the setup & install targets.\n${COLOUR_OFF}"
