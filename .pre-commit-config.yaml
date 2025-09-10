@@ -1,6 +1,6 @@
 ---
 # all commands by default will run on every commit
-default_install_hook_types: [pre-commit]
+default_install_hook_types: [pre-commit, commit-msg]
 default_stages: [commit]
 # some configs are only available after v2.18
 minimum_pre_commit_version: '2.18'
@@ -19,6 +19,7 @@ repos:
       rev: v9.22.0
       hooks:
           - id: commitlint
+            name: Git checks - Git commit validation
             stages: [commit-msg]
             additional_dependencies: ['@commitlint/config-conventional']
 
