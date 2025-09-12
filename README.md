@@ -1,84 +1,94 @@
-# Project Title
-
-Simple one-line overview of use / purpose of the project.
+Perfect 👍 — here’s a **README draft** with the **high-level flow and exact commands** for each step, so when you return later you won’t need to rediscover them.
 
 ---
 
-## Contents
+# 🧪 Ansible Sandbox
 
-1. Summary
-2. Getting started
-    * Prerequisites
-    * Installation
-    * How-to Run
-3. Git Branching Strategy
-4. Help
-5. Folder Contents
+A lightweight local environment for experimenting with Ansible using Docker containers.
 
 ---
 
-## 1. Summary
+## 🚀 Quick start
 
-<Brief overview of the purpose of the project and it's benefit>
-
-### Technologies Used
-
-<List of technologies used, e.g. AWS, Python, Snowflake>
-
----
-
-## 2. Getting started
-
-### Prerequisites
-
-<Describe any prerequisites libraries / configuration / other needed for the project, e.g.:>
-
-Before you begin, ensure you have met the following requirements:
-
-* You have installed the latest version of <coding_language/dependency/requirement_1>
-* You have a <Mac/Windows>
-
-### Installation
-
-* How / where to download your program
-* Any modifications needed to be made to files / folders
-
-### How-to Run
-
-* How to run the program
-* Step-by-step bullets
+### 1. Install dependencies
 
 ```bash
-code blocks for commands
+make deps
 ```
 
 ---
 
-## 3. Git Branching Strategy
-
-See [docs/git_branching_strategy.md](docs/git_branching_strategy.md).
-
----
-
-## 4. Help
-
-Describe troubleshooting steps for common problems or issues. E.g.
+### 2. Create test containers
 
 ```bash
-commands to run if specific messages are encountered
+docker run -d --name node1 --hostname node1 ubuntu:22.04 sleep infinity
+docker run -d --name node2 --hostname node2 ubuntu:22.04 sleep infinity
 ```
 
 ---
 
-## 5. Folder Contents
+### 3. Install Python inside the containers
 
-| Folder | Description                  |
-| -------| -----------------------------|
-| folder | Contains files related to... |
-| folder | Contains files related to... |
+Ansible requires Python to be installed on managed hosts.
+
+```bash
+docker exec -it node1 apt-get update && docker exec -it node1 apt-get install -y python3
+docker exec -it node2 apt-get update && docker exec -it node2 apt-get install -y python3
+```
 
 ---
 
-## Credits
+### 4. Create an Ansible inventory
 
-This is an adapted version of the following [README](https://gist.github.com/DomPizzie/7a5ff55ffa9081f2de27c315f5018afc).
+Create a file called `inventory.ini`:
+
+```ini
+[nodes]
+node1 ansible_connection=docker
+node2 ansible_connection=docker
+```
+
+---
+
+### 5. Write a simple playbook
+
+Create `test_playbook.yml`:
+
+```yaml
+- name: Test Ansible on local Docker containers
+  hosts: nodes
+  gather_facts: yes
+  tasks:
+    - name: Ping all nodes
+      ansible.builtin.ping:
+
+    - name: Create a test file
+      ansible.builtin.file:
+        path: /tmp/hello_ansible.txt
+        state: touch
+```
+
+---
+
+### 6. Run the playbook
+
+```bash
+ansible-playbook -i inventory.ini test_playbook.yml
+```
+
+Verify the file was created:
+
+```bash
+docker exec -it node1 ls /tmp/
+docker exec -it node2 ls /tmp/
+```
+
+---
+
+## 🧹 Housekeeping
+
+Remove the containers:
+
+```bash
+make clean
+```

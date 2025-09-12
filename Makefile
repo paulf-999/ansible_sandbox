@@ -38,6 +38,7 @@ test:
 
 clean:
 	@echo "${INFO}\nCalled makefile target 'clean'. Restoring the repository to its initial state.${COLOUR_OFF}\n"
+	@docker rm -f node1 node2
 
 # Phony targets
 .PHONY: all deps install run test clean
