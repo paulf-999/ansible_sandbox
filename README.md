@@ -1,7 +1,3 @@
-Perfect 👍 — here’s a **README draft** with the **high-level flow and exact commands** for each step, so when you return later you won’t need to rediscover them.
-
----
-
 # 🧪 Ansible Sandbox
 
 A lightweight local environment for experimenting with Ansible using Docker containers.
