@@ -3,9 +3,10 @@ SHELL = /bin/sh
 #================================================================
 # Usage
 #================================================================
-# make deps		# just install the dependencies
-# make install		# perform the end-to-end install
-# make clean		# perform a housekeeping cleanup
+# make deps      # install dependencies
+# make install   # end-to-end setup (create & prepare containers)
+# make run       # run the sample playbook
+# make clean     # cleanup containers
 
 #=======================================================================
 # Variables
@@ -13,35 +14,29 @@ SHELL = /bin/sh
 .EXPORT_ALL_VARIABLES:
 
 # load variables from separate file
-include src/make/variables.mk # load variables from a separate makefile file
-
-CONFIG_FILE := config.yaml
+include src/make/variables.mk
 
 #=======================================================================
 # Targets
 #=======================================================================
-all: deps install clean
+all: deps install
 
 deps:
 	@echo "${INFO}\nCalled makefile target 'deps'. Download any required libraries.${COLOUR_OFF}\n"
-	@echo "${DEBUG}Installing Python deps with pipx.${COLOUR_OFF}\n"
+	@echo "${DEBUG}Installing Python deps with pip.${COLOUR_OFF}\n"
 	@pip install -r requirements.txt
 
 install:
-	@echo "${INFO}\nCalled makefile target 'install'. Run the setup & install targets.\n${COLOUR_OFF}"
+	@echo "${INFO}\nCalled makefile target 'install'. Completed sandbox setup.\n${COLOUR_OFF}"
+	@echo "${INFO}Create & prepare Docker nodes (node1, node2) using Ubuntu.${COLOUR_OFF}"
+	@bash src/sh/create_docker_containers.sh
 
 run:
-	@echo "${INFO}\nCalled makefile target 'run'. Launch service.${COLOUR_OFF}\n"
-
-test:
-	@echo "${INFO}\nCalled makefile target 'test'. Perform any required tests.${COLOUR_OFF}\n"
+	@echo "${INFO}\nCalled makefile target 'run'. Launch Ansible playbook.${COLOUR_OFF}\n"
+	@ansible-playbook -i inventory.ini test_playbook.yml
 
 clean:
 	@echo "${INFO}\nCalled makefile target 'clean'. Restoring the repository to its initial state.${COLOUR_OFF}\n"
-	@docker rm -f node1 node2
+	@bash src/sh/destroy_docker_containers.sh || true
 
-# Phony targets
-.PHONY: all deps install run test clean
-
-# .PHONY tells Make that these targets don't represent files
-# This prevents conflicts with any files named "all" or "clean"
+.PHONY: all deps install run clean

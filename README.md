@@ -1,3 +1,12 @@
+Perfect — here’s your **updated and aligned README**, revised to:
+
+* reflect the new Makefile flow (`make install` instead of manual Docker commands)
+* merge steps 2 + 3 (“create & prepare containers”)
+* clean up references to pipx (since you’re now using pip)
+* add a few small phrasing improvements for readability.
+
+---
+
 # 🧪 Ansible Sandbox
 
 A lightweight local environment for experimenting with **Ansible** using **Docker containers**.
@@ -31,93 +40,54 @@ All components are **local and disposable**, so you can safely experiment and te
 make deps
 ```
 
-Installs required command-line dependencies (Ansible and related tools) using `pipx`.
+Installs the required Python dependencies (Ansible and related tools) using `pip`.
 
 ---
 
-### 2. Create test containers
+### 2. Create and prepare test containers
 
 ```bash
-docker run -d --name node1 --hostname node1 ubuntu:22.04 sleep infinity
-docker run -d --name node2 --hostname node2 ubuntu:22.04 sleep infinity
+make install
 ```
 
-Creates two Ubuntu containers (`node1`, `node2`) to simulate remote hosts for Ansible to manage.
+This command:
+
+1. Creates two Ubuntu containers (`node1`, `node2`) to act as Ansible-managed nodes.
+2. Installs Python inside each container (required by Ansible to run modules).
+3. Verifies that your `inventory.ini` and `test_playbook.yml` files exist.
+
+After completion, you’ll have two ready-to-use Ansible hosts running locally.
 
 ---
 
-### 3. Install Python inside the containers
-
-Ansible requires Python on each managed host to run most modules.
+### 3. Run the playbook
 
 ```bash
-docker exec -it node1 apt-get update && docker exec -it node1 apt-get install -y python3
-docker exec -it node2 apt-get update && docker exec -it node2 apt-get install -y python3
+make run
 ```
 
----
+This executes the sample playbook (`test_playbook.yml`) against the two Docker nodes defined in `inventory.ini`.
 
-### 4. Create an Ansible inventory
-
-Create a file called `inventory.ini`:
-
-```ini
-[nodes]
-node1 ansible_connection=docker
-node2 ansible_connection=docker
-```
-
-Defines a host group called `nodes`, telling Ansible to connect using the Docker connection plugin instead of SSH.
-
----
-
-### 5. Write a simple playbook
-
-Create `test_playbook.yml`:
-
-```yaml
-- name: Test Ansible on local Docker containers
-  hosts: nodes
-  gather_facts: yes
-  tasks:
-    - name: Ping all nodes
-      ansible.builtin.ping:
-
-    - name: Create a test file
-      ansible.builtin.file:
-        path: /tmp/hello_ansible.txt
-        state: touch
-```
-
-This playbook targets all hosts in the `nodes` group and performs two simple actions:
-
-1. Confirms connectivity using the built-in `ping` module.
-2. Creates a file `/tmp/hello_ansible.txt` on each node.
-
----
-
-### 6. Run the playbook
-
-```bash
-ansible-playbook -i inventory.ini test_playbook.yml
-```
-
-Verify the file was created:
+Verify that the playbook ran successfully by checking for the created file:
 
 ```bash
 docker exec -it node1 ls /tmp/
 docker exec -it node2 ls /tmp/
 ```
 
+You should see `hello_ansible.txt` listed on both nodes.
+
 ---
 
 ## 🧹 Housekeeping
 
-Remove the containers when finished:
+When you’re done, remove the containers to restore your environment:
 
 ```bash
 make clean
 ```
+
+This stops and removes both containers (`node1`, `node2`).
 
 ---
 
@@ -130,3 +100,7 @@ make clean
 | **Module**    | A reusable unit of work (e.g. `ping`, `file`, `copy`, `yum`).                       |
 | **Task**      | A single module invocation within a playbook.                                       |
 | **Node**      | A target system that Ansible connects to and manages (your Docker containers).      |
+
+---
+
+Would you like me to add a short **“Next steps / ideas for expansion”** section at the bottom (e.g. add variables, use roles, integrate Molecule)? It would make this README a bit more forward-looking for when you share it with your wider team.
