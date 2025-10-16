@@ -1,9 +1,5 @@
-Perfect — here’s your **updated and aligned README**, revised to:
-
-* reflect the new Makefile flow (`make install` instead of manual Docker commands)
-* merge steps 2 + 3 (“create & prepare containers”)
-* clean up references to pipx (since you’re now using pip)
-* add a few small phrasing improvements for readability.
+Perfect 👍 — here’s the final **README** with a concise **“Next Steps / Ideas for Expansion”** section added at the end.
+It stays in your professional, instructional tone but gives your team clear directions on how to evolve the sandbox further.
 
 ---
 
@@ -34,48 +30,15 @@ All components are **local and disposable**, so you can safely experiment and te
 
 ## 🚀 Quick start
 
-### 1. Install dependencies
-
-```bash
-make deps
-```
-
-Installs the required Python dependencies (Ansible and related tools) using `pip`.
+| **Step**                                     | **Command(s)**             | **Description**                                                                                                                                                                                                                                                                                                            |
+| -------------------------------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🧩 **1. Install dependencies**               | `make deps`    | Installs the required Python dependencies (Ansible and related tools) using `pip`.                                                                                                                                                                                                                                         |
+| 🐳 **2. Create and prepare test containers** | `make install` | Creates two Ubuntu containers (`node1`, `node2`) that act as Ansible-managed nodes, installs Python inside each (required for Ansible modules), and verifies that your `inventory.ini` and `test_playbook.yml` files exist. <br><br>After completion, you’ll have two ready-to-use Ansible hosts running locally.          |
+| ▶️ **3. Run the playbook**                   | `make run`     | Runs the sample playbook (`test_playbook.yml`) against the two Docker nodes defined in `inventory.ini`. <br><br>To verify success, check for the created file on each node: <br>`bash docker exec -it node1 ls /tmp/<br>docker exec -it node2 ls /tmp/`<br>You should see `hello_ansible.txt` listed on both nodes. |
 
 ---
 
-### 2. Create and prepare test containers
-
-```bash
-make install
-```
-
-This command:
-
-1. Creates two Ubuntu containers (`node1`, `node2`) to act as Ansible-managed nodes.
-2. Installs Python inside each container (required by Ansible to run modules).
-3. Verifies that your `inventory.ini` and `test_playbook.yml` files exist.
-
-After completion, you’ll have two ready-to-use Ansible hosts running locally.
-
----
-
-### 3. Run the playbook
-
-```bash
-make run
-```
-
-This executes the sample playbook (`test_playbook.yml`) against the two Docker nodes defined in `inventory.ini`.
-
-Verify that the playbook ran successfully by checking for the created file:
-
-```bash
-docker exec -it node1 ls /tmp/
-docker exec -it node2 ls /tmp/
-```
-
-You should see `hello_ansible.txt` listed on both nodes.
+✅ *After completing these steps, you’ll have a working local Ansible environment with disposable Docker-based test nodes.*
 
 ---
 
@@ -103,4 +66,27 @@ This stops and removes both containers (`node1`, `node2`).
 
 ---
 
-Would you like me to add a short **“Next steps / ideas for expansion”** section at the bottom (e.g. add variables, use roles, integrate Molecule)? It would make this README a bit more forward-looking for when you share it with your wider team.
+## 🌱 Next steps / ideas for expansion
+
+This sandbox provides the foundation for learning and experimenting with Ansible.
+Once you’re comfortable with the basics, here are some directions to explore:
+
+1. **Add Variables & Templates**
+   Use `vars:` blocks or external `.yml` files to parameterise tasks and render dynamic content via Jinja2 templates.
+
+2. **Introduce Roles**
+   Break playbooks into reusable, modular roles (e.g. `webserver`, `database`) to better reflect real-world structures.
+
+   See [docs/ansible_roles_example.md](docs/ansible_roles_example.md).
+
+3. **Test with Molecule**
+   Add [Molecule](https://molecule.readthedocs.io/) for automated linting, testing, and validation of your roles and playbooks.
+
+4. **Use Ansible Vault**
+   Practise securely storing secrets or credentials using `ansible-vault encrypt`.
+
+5. **Integrate CI/CD**
+   Set up a simple pipeline (e.g. GitHub Actions, Azure DevOps) to run linting or test playbooks automatically on commit.
+
+6. **Explore Different Connection Types**
+   Replace the Docker connection plugin with `ssh` to manage remote VMs or EC2 instances for more realistic scenarios.
