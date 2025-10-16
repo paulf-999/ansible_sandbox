@@ -3,17 +3,18 @@ SHELL = /bin/sh
 #================================================================
 # Usage
 #================================================================
-# make deps      # install dependencies
-# make install   # end-to-end setup (create & prepare containers)
-# make run       # run the sample playbook
-# make clean     # cleanup containers
+# make deps       # install Python deps (requirements.txt) + Galaxy deps (requirements.yml)
+# make install    # create & prepare Docker containers (node1, node2)
+# make run        # run playbooks/site.yml against inventories/dev
+# make plan       # dry-run (check mode)
+# make clean      # remove containers
 
 #=======================================================================
 # Variables
 #=======================================================================
 .EXPORT_ALL_VARIABLES:
 
-# load variables from separate file
+# Load colours/messages and any shared vars
 include src/make/variables.mk
 
 #=======================================================================
@@ -22,9 +23,8 @@ include src/make/variables.mk
 all: deps install
 
 deps:
-	@echo "${INFO}\nCalled makefile target 'deps'. Download any required libraries.${COLOUR_OFF}\n"
-	@echo "${DEBUG}Installing Python deps with pip.${COLOUR_OFF}\n"
-	@pip install -r requirements.txt
+	@[ ! -f requirements.txt ] || pip install -r requirements.txt
+	@[ ! -f requirements.yml ] || ansible-galaxy install -r requirements.yml
 
 install:
 	@echo "${INFO}\nCalled makefile target 'install'. Completed sandbox setup.\n${COLOUR_OFF}"
@@ -33,10 +33,14 @@ install:
 
 run:
 	@echo "${INFO}\nCalled makefile target 'run'. Launch Ansible playbook.${COLOUR_OFF}\n"
-	@ansible-playbook -i inventory.ini test_playbook.yml
+	@ansible-playbook -i inventories/dev/inventory.ini playbooks/site.yml
+
+plan:
+	@echo "${INFO}\nCalled makefile target 'plan'. Dry-run (check mode).${COLOUR_OFF}\n"
+	@ansible-playbook -i inventories/dev/inventory.ini playbooks/site.yml --check
 
 clean:
 	@echo "${INFO}\nCalled makefile target 'clean'. Restoring the repository to its initial state.${COLOUR_OFF}\n"
 	@bash src/sh/destroy_docker_containers.sh || true
 
-.PHONY: all deps install run clean
+.PHONY: all deps install run plan clean
