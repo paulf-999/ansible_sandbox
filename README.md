@@ -1,32 +1,26 @@
 # 🧪 Ansible Sandbox
 
-A lightweight **starter project** for learning and experimenting with **Ansible** locally — using Docker containers as disposable managed nodes.
+A lightweight **starter project** for learning and experimenting with **Ansible** locally —
+using Docker containers as disposable managed nodes.
 
-This repo demonstrates a **clean baseline Ansible project structure** (with separate folders for playbooks, inventories, and roles), making it easy to evolve into a real-world automation repo later.
+✅ **In short:**
+This sandbox gives you a reproducible, disposable environment to safely learn Ansible fundamentals — and a structure you can grow into a production-grade project later.
 
----
-
-## ⚙️ What this sandbox sets up
-
-When you complete the setup steps below, you’ll have:
-
-* **Two local Docker containers (`node1`, `node2`)**
-  → These act as simulated Ansible-managed hosts, letting you practise running playbooks against multiple systems.
-
-* **An Ansible inventory (`inventories/dev/inventory.ini`)**
-  → Defines the local containers as hosts in a “dev” environment group.
-
-* **A sample playbook (`playbooks/site.yml`)**
-  → A simple YAML file with example tasks (e.g., pinging hosts, creating files) so you can verify Ansible is working correctly.
-
-* **A baseline folder structure (`playbooks/`, `roles/`, `inventories/`)**
-  → Mirrors the layout used in production Ansible projects — helping you transition from sandbox to real deployments later.
-
-All components are **local and disposable**, so you can safely experiment and tear them down with `make clean`.
+Everything runs locally and can be reset at any time, so it’s safe to experiment.
 
 ---
 
-## 🚀 Quick start
+## 📘 Refresher / Further Reading
+
+If you’re returning after a break or new to Ansible, check out:
+
+* [Introductory Overview](docs/introductory_overview_ansible.md) — a practical walkthrough of the minimum setup and flow.
+* [Key Ansible Concepts](docs/key_ansible_concepts.md) — a short glossary explaining common terms.
+* [What the Sandbox Sets Up](docs/what_the_sandbox_sets_up.md) — explains what’s created when you run the setup commands and how each part fits together.
+
+---
+
+## 🚀 Quick Start
 
 | **Step**                                     | **Command(s)** | **Description**                                                                                                                                                                                                                                                                                  |
 | -------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -40,23 +34,11 @@ All components are **local and disposable**, so you can safely experiment and te
 
 ---
 
-## 🧹 Clean-up
-
-When you’re done, remove the containers to restore your environment:
-
-```bash
-make clean
-```
-
-This stops and removes both containers (`node1`, `node2`).
-
----
-
-## 🗂️ Project structure
+## 🗂️ Project Structure
 
 Here’s the baseline repo layout used by this sandbox:
 
-```
+```bash
 .
 ├── ansible.cfg
 ├── inventories/
@@ -66,18 +48,17 @@ Here’s the baseline repo layout used by this sandbox:
 │       └── host_vars/
 ├── playbooks/
 │   └── site.yml
-├── roles/
-│   └── README.md
 ├── requirements.yml
 ├── Makefile
 ├── README.md
 └── src/
-    ├── make/variables.mk
     └── sh/
         ├── create_docker_containers.sh
         ├── destroy_docker_containers.sh
         └── shell_utils.sh
 ```
+
+> 💡 *Tip:* `site.yml` and `inventories/dev/inventory.ini` are your main starting points — edit these when you want to try something new.
 
 This mirrors the **standard structure** used for scalable Ansible repositories — where:
 
@@ -85,44 +66,12 @@ This mirrors the **standard structure** used for scalable Ansible repositories �
 | ---------------- | ----------------------------------------------------------------------- |
 | **inventories/** | Environment-specific inventories (e.g. `dev`, `prod`) and variables.    |
 | **playbooks/**   | YAML playbooks that define automation workflows.                        |
-| **roles/**       | Modular, reusable roles (e.g. `docker_runtime`, `airflow_single_node`). |
-| **src/**         | Helper shell scripts and Make targets for local automation.             |
+| **roles/**       | Modular, reusable roles (e.g. `docker_runtime`). |
+| **ansible.cfg**  | Local configuration to make Ansible commands simpler and consistent. |
 
 ---
 
-## 📘 Key Ansible Concepts
+## 🌱 Next Steps
 
-| Term          | Description                                                                      |
-| ------------- | -------------------------------------------------------------------------------- |
-| **Inventory** | Lists the hosts or groups of hosts that Ansible manages.                         |
-| **Playbook**  | A YAML file describing one or more “plays” (task sets) run on defined hosts.     |
-| **Role**      | A structured collection of tasks, files, templates, and vars designed for reuse. |
-| **Module**    | A discrete unit of work (e.g. `ping`, `file`, `copy`, `yum`).                    |
-| **Task**      | A single module invocation within a playbook.                                    |
-| **Node**      | A target system that Ansible connects to and manages (your Docker containers).   |
-
----
-
-## 🌱 Next steps / ideas for expansion
-
-This sandbox provides a practical foundation for learning and iterating with Ansible.
-Once you’re comfortable with the basics, consider expanding in the following directions:
-
-1. **Add Variables & Templates**
-   Use `vars:` blocks or external files to parameterise tasks and render dynamic content with Jinja2 templates.
-
-2. **Introduce Roles**
-   Move repeated logic into reusable, modular roles (e.g. `docker_runtime`, `airflow_single_node`).
-   → See [docs/ansible_roles_example.md](docs/ansible_roles_example.md)
-
-3. **Add Molecule tests**
-   Use [Molecule](https://molecule.readthedocs.io/) to lint and test your roles automatically.
-
-4. **Use Ansible Vault**
-   Securely store credentials or secrets using `ansible-vault encrypt`.
-
-5. **Integrate CI/CD**
-   Add a lightweight pipeline (e.g. GitHub Actions or Azure DevOps) to run `ansible-lint` and playbook syntax checks on commit.
-
-6. **Target remote hosts**
-   Replace the local Docker setup with real VMs or EC2 instances (SSH-based connections) to practise managing actual infrastructure.
+Once you’ve completed the Quick Start, you can start exploring Ansible in more depth.
+See [Next Steps with the Ansible Sandbox](docs/next_steps_with_ansible_sandbox.md) for practical ideas on what to try next.
