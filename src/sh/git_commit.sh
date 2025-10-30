@@ -41,7 +41,7 @@ GIT_FLAGS=()
 # Truncate long filenames for commit scope/menu, keeping extension
 truncate_scope() {
     local name="$1"
-    local max_len=10  # max chars before extension
+    local max_len=30  # max chars before extension
 
     local base ext
     if [[ "$name" == *.* && "${name##*.}" != "$name" ]]; then
@@ -105,7 +105,7 @@ select_type() {
 # -----------------------------
 gather_staged_files() {
     STAGED=()
-    # Use a while-read fallback that works on all Bash versions
+    # Use a while-read fallback that works on older Bash too
     while IFS= read -r line; do
         [[ -n "$line" ]] && STAGED+=("$line")
     done < <(git diff --cached --name-only 2>/dev/null || printf '')
@@ -219,8 +219,12 @@ confirm_and_commit() {
     read -rp "Proceed? [y/N] " confirm
     [[ "$confirm" =~ ^[Yy]$ ]] || exit 0
 
-    # Expand safely under set -u
-    git commit ${GIT_FLAGS+"${GIT_FLAGS[@]}"} -m "$COMMIT_MSG"
+    # Expand GIT_FLAGS safely under set -u
+    if declare -p GIT_FLAGS >/dev/null 2>&1 && ((${#GIT_FLAGS[@]} > 0)); then
+        git commit "${GIT_FLAGS[@]}" -m "$COMMIT_MSG"
+    else
+        git commit -m "$COMMIT_MSG"
+    fi
 }
 
 # -----------------------------
