@@ -1,0 +1,17 @@
+---
+# Defaults so the role is reusable
+
+# Repo identity
+git_repo_owner: ""
+git_repo_name: ""
+
+# Auth (injected by secrets_env / playbook)
+GIT_PAT_TOKEN: ""
+
+# Repo checkout settings
+git_repo_version: "main"
+git_repo_dest_root: "/opt/git_repos"
+git_repo_dest: "{{ git_repo_dest_root }}/{{ git_repo_name }}"
+
+# Repo URL (override this if you later switch to SSH etc.)
+git_repo_url: "https://{{ GIT_PAT_TOKEN }}@github.com/{{ git_repo_owner }}/{{ git_repo_name }}.git"

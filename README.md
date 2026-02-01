@@ -1,77 +1,73 @@
 # 🧪 Ansible Sandbox
 
-A lightweight **starter project** for learning and experimenting with **Ansible** locally —
-using Docker containers as disposable managed nodes.
+A small, role-based **local Ansible environment** using Docker, designed for quick experimentation and easy re-use.
 
-✅ **In short:**
-This sandbox gives you a reproducible, disposable environment to safely learn Ansible fundamentals — and a structure you can grow into a production-grade project later.
+The structure used matches typical real-world Ansible projects.
 
-Everything runs locally and can be reset at any time, so it’s safe to experiment.
+### 🌐 Example: Deploy a Local Webserver
 
----
-
-## 📘 Refresher / Further Reading
-
-If you’re returning after a break or new to Ansible, check out:
-
-* [Introductory Overview](docs/introductory_overview_ansible.md) — a practical walkthrough of the minimum setup and flow.
-* [Key Ansible Concepts](docs/key_ansible_concepts.md) — a short glossary explaining common terms.
-* [What the Sandbox Sets Up](docs/what_the_sandbox_sets_up.md) — explains what’s created when you run the setup commands and how each part fits together.
+The sandbox includes an example Ansible playbook that deploys a local webserver inside a Docker container.
 
 ---
 
-## 🚀 Quick Start
+# 🚦 How to Use This Repo
 
-| **Step**                                     | **Command(s)** | **Description**                                                                                                                                                                                                                                                                                  |
-| -------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 🧩 **1. Install dependencies**               | `make deps`    | Installs the required Python dependencies (Ansible and related tools) using `pip`, and installs any collections listed in `requirements.yml`.                                                                                                                                                    |
-| 🐳 **2. Create and prepare test containers** | `make install` | Creates two Ubuntu-based Docker containers (`node1`, `node2`) that act as managed hosts, installs Python inside each (required by Ansible modules), and ensures your inventory and playbook are in place.                                                                                        |
-| ▶️ **3. Run the playbook**                   | `make run`     | Executes `playbooks/site.yml` against both containers listed in `inventories/dev/inventory.ini`. <br><br>To verify success, check for the created file on each node:<br>`docker exec -it node1 ls /tmp`<br>`docker exec -it node2 ls /tmp`<br>You should see `hello_ansible.txt` listed on both. |
+You don’t need any Ansible knowledge to use this sandbox.
 
----
+## ⚠️ Prerequisites
 
-✅ *After completing these steps, you’ll have a working local Ansible setup using Docker containers as managed hosts.*
+Before running anything, you must complete the following:
 
----
+1. **Ensure Docker Desktop is running**
+   The sandbox deploys everything into a local Docker container.
 
-## 🗂️ Project Structure
+2. **Rename `.env_template` → `.env`**, then add your GitHub PAT inside it:
 
-Here’s the baseline repo layout used by this sandbox:
+   ```env
+   GIT_PAT_TOKEN=ghp_your_real_token_here
+   ```
+
+## ▶️ Running the Example
+
+After completing the prerequisites, run the following commands from the repo root:
 
 ```bash
-.
-├── ansible.cfg
-├── inventories/
-│   └── dev/
-│       ├── inventory.ini
-│       ├── group_vars/
-│       └── host_vars/
-├── playbooks/
-│   └── site.yml
-├── requirements.yml
-├── Makefile
-├── README.md
-└── src/
-    └── sh/
-        ├── create_docker_containers.sh
-        ├── destroy_docker_containers.sh
-        └── shell_utils.sh
+make deps      # install Ansible
+make install   # create the Docker container
+make run       # apply the example playbook
 ```
 
-> 💡 *Tip:* `site.yml` and `inventories/dev/inventory.ini` are your main starting points — edit these when you want to try something new.
-
-This mirrors the **standard structure** used for scalable Ansible repositories — where:
-
-| Folder           | Purpose                                                                 |
-| ---------------- | ----------------------------------------------------------------------- |
-| **inventories/** | Environment-specific inventories (e.g. `dev`, `prod`) and variables.    |
-| **playbooks/**   | YAML playbooks that define automation workflows.                        |
-| **roles/**       | Modular, reusable roles (e.g. `docker_runtime`). |
-| **ansible.cfg**  | Local configuration to make Ansible commands simpler and consistent. |
+Then visit **[http://localhost](http://localhost)** in your browser
+→ You’ll see a test page served from inside the container.
 
 ---
 
-## 🌱 Next Steps
+# 📜 Summary of the Example Playbook
 
-Once you’ve completed the Quick Start, you can start exploring Ansible in more depth.
-See [Next Steps with the Ansible Sandbox](docs/next_steps_with_ansible_sandbox.md) for practical ideas on what to try next.
+The example playbook applies two roles to a local Docker container:
+
+1. **`webserver`** → installs nginx and serves a simple “Hello” page
+2. **`git_repo_dbt`** → installs git and clones the private `da-etl-dbtanalytics` repo using a PAT
+
+The result:
+
+* nginx running inside the container
+* the dbt analytics repo cloned under `/opt`
+
+---
+
+# 📝 How it works (30 seconds)
+
+* `make install` creates an Ubuntu Docker container (`sandbox_webserver`), exposes port 80 → host, installs Python.
+* `make run` auto-loads `.env`, providing `GIT_PAT_TOKEN` to Ansible.
+* nginx + the cloned repo sit inside the container, not on your machine
+* Ansible applies:
+
+  * **webserver** → installs nginx and serves a test HTML page
+  * **git_repo_dbt** → clones the private repo into `/opt`
+* You visit **[http://localhost](http://localhost)** to see the nginx page from inside the container.
+
+
+## 📘 Additional Documentation
+
+- [How the Ansible Sandbox Works](docs/how_the_sandbox_works.md)

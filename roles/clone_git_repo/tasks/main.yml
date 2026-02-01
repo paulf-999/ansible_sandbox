@@ -1,0 +1,30 @@
+---
+- name: Assert required vars are provided
+  ansible.builtin.assert:
+    that:
+      - GIT_PAT_TOKEN is defined
+      - GIT_PAT_TOKEN | length > 0
+    fail_msg: "git_repo_dbt requires GIT_PAT_TOKEN to be passed in."
+
+- name: Install git client
+  ansible.builtin.apt:
+    name: git
+    state: present
+    update_cache: yes
+
+- name: Clone repo
+  ansible.builtin.git:
+    repo: "{{ git_repo_url }}"
+    dest: "{{ git_repo_dest }}"
+    version: "{{ git_repo_version }}"
+    force: yes
+
+- name: Check that cloned repo exists
+  ansible.builtin.stat:
+    path: "{{ git_repo_dest }}/.git"
+  register: repo_stat
+
+- name: Confirm repo was cloned successfully
+  ansible.builtin.debug:
+    msg: "✅ Cloned {{ git_repo_owner }}/{{ git_repo_name }} into {{ git_repo_dest }}."
+  when: repo_stat.stat.exists

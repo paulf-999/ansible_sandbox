@@ -1,12 +1,24 @@
-# test_playbook.yml
-- name: Test Ansible on local Docker containers
-  hosts: nodes
-  gather_facts: yes
-  tasks:
-    - name: Ping all nodes
-      ansible.builtin.ping:
+---
+# Playbook to set up a web server environment for hosting applications.
 
-    - name: Create a test file
-      ansible.builtin.file:
-        path: /tmp/hello_ansible.txt
-        state: touch
+- name: Create (Docker) VM & Install Webserver
+  hosts: sandbox  # defined in inventories/dev/inventory.ini
+  gather_facts: no  # Skip gathering facts for sandbox env
+  become: false  # Use non-root user for docker container
+
+  roles:
+    # Bootstrap secrets from local environment (.env via Makefile)
+    - role: secrets_env
+      tags: [secrets]
+
+    # Install and configure the webserver in the sandbox container
+    - role: webserver
+      tags: [webserver]
+
+    # Clone and configure the dbt repo (token passed in from secrets bootstrap)
+    - role: clone_git_repo
+      tags: [dbt_repo]
+      vars:
+        GIT_PAT_TOKEN: "{{ GIT_PAT_TOKEN }}"
+        git_repo_owner: "payroc"
+        git_repo_name: "da-etl-dbtanalytics"

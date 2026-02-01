@@ -1,0 +1,28 @@
+---
+- name: Load required secrets from environment
+  no_log: true
+  ansible.builtin.set_fact:
+    ENV_NAME: "{{ lookup('ansible.builtin.env', 'ENV_NAME') | default('', true) }}"
+    GIT_PAT_TOKEN: "{{ lookup('ansible.builtin.env', 'GIT_PAT_TOKEN') | default('', true) }}"
+    SNOWFLAKE_ACCOUNT_NAME: "{{ lookup('ansible.builtin.env', 'SNOWFLAKE_ACCOUNT_NAME') | default('', true) }}"
+    SNOWFLAKE_USER_NAME: "{{ lookup('ansible.builtin.env', 'SNOWFLAKE_USER_NAME') | default('', true) }}"
+    SNOWFLAKE_USER_PRIVATE_KEY: "{{ lookup('ansible.builtin.env', 'SNOWFLAKE_USER_PRIVATE_KEY') | default('', true) }}"
+    SNOWFLAKE_ROLE: "{{ lookup('ansible.builtin.env', 'SNOWFLAKE_ROLE') | default('', true) }}"
+    SNOWFLAKE_DATABASE: "{{ lookup('ansible.builtin.env', 'SNOWFLAKE_DATABASE') | default('', true) }}"
+    SNOWFLAKE_DATABASE_SCHEMA: "{{ lookup('ansible.builtin.env', 'SNOWFLAKE_DATABASE_SCHEMA') | default('', true) }}"
+    SNOWFLAKE_WAREHOUSE: "{{ lookup('ansible.builtin.env', 'SNOWFLAKE_WAREHOUSE') | default('', true) }}"
+
+- name: Fail if required secrets are missing
+  ansible.builtin.assert:
+    that:
+        - ENV_NAME | length > 0
+        - GIT_PAT_TOKEN | length > 0
+        - SNOWFLAKE_ACCOUNT_NAME | length > 0
+        - SNOWFLAKE_USER_NAME | length > 0
+        - SNOWFLAKE_USER_PRIVATE_KEY | length > 0
+        - SNOWFLAKE_ROLE | length > 0
+        - SNOWFLAKE_DATABASE | length > 0
+        - SNOWFLAKE_DATABASE_SCHEMA | length > 0
+        - SNOWFLAKE_WAREHOUSE | length > 0
+    fail_msg: >
+        Missing required env vars. Ensure .env exists (copied from .env_template) and is populated.

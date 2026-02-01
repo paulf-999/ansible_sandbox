@@ -1,0 +1,3 @@
+docker:
+  container_name: sandbox_webserver
+  image: ubuntu:22.04
